@@ -5,7 +5,7 @@ import com.appswella.wisepaise.repository.ExpenseGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class ExpenseGroupService {
@@ -29,7 +29,7 @@ public class ExpenseGroupService {
         expenseGroupRepository.deleteById(exGroupId);
     }
 
-    public Optional<ExpenseGroup> getAllExpenseGroupsByUserId(String userId) {
+    public List<ExpenseGroup> getAllExpenseGroupsByUserId(String userId) {
         return expenseGroupRepository.findByExGroupOwnerId(userId);
     }
 }
