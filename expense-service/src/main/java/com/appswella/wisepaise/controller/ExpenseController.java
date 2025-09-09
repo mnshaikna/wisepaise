@@ -1,0 +1,48 @@
+package com.appswella.wisepaise.controller;
+
+import com.appswella.wisepaise.model.Expense;
+import com.appswella.wisepaise.service.ExpenseService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/expense")
+@Tag(name = "Expenses", description = "Expense API")
+public class ExpenseController {
+    @Autowired
+    private ExpenseService expenseService;
+
+    @PostMapping("/create")
+    @Operation(summary = "Create a new expense")
+    public String createExpense(@RequestBody Expense expense) {
+        return expenseService.createExpense(expense).getExpenseId();
+    }
+
+    @GetMapping("/get/{expenseId}")
+    @Operation(summary = "Get an expense by id")
+    public Expense getExpense(@PathVariable String expenseId) {
+        return expenseService.getExpenseById(expenseId);
+    }
+
+    @DeleteMapping("/delete/{expenseId}")
+    @Operation(summary = "Delete an expense by id")
+    public String deleteExpense(@PathVariable String expenseId) {
+        return expenseService.deleteExpense(expenseId);
+    }
+
+    @PutMapping("/update")
+    @Operation(summary = "Update an expense")
+    public Expense updateExpense(@RequestBody Expense expense) {
+        return expenseService.updateExpense(expense);
+    }
+
+    @GetMapping("/group/{groupId}")
+    @Operation(summary = "Get all expenses by group id")
+    public Optional<Expense> getExpensesByExGroupId(@PathVariable String groupId) {
+        return expenseService.getExpensesByExGroupId(groupId);
+    }
+}
