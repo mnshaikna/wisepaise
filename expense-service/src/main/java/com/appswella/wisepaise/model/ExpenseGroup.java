@@ -26,4 +26,7 @@ public class ExpenseGroup
     private List<String> exGroupMembers;
     private List<Expense> expenses;
     private String exGroupOwnerId;
+    private double exGroupIncome;
+    private double exGroupExpenses;
+
 }

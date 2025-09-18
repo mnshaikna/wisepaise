@@ -18,21 +18,20 @@ public class ExpenseGroupController {
 
     @PostMapping("/create")
     @Operation(summary = "Create a new expenseGroup")
-    public String createExpenseGroup(@RequestBody ExpenseGroup expenseGroup) {
-        return expenseGroupService.createExpenseGroup(expenseGroup).getExGroupId();
+    public ExpenseGroup createExpenseGroup(@RequestBody ExpenseGroup expenseGroup) {
+        return expenseGroupService.createExpenseGroup(expenseGroup);
     }
 
     @PutMapping("/update")
     @Operation(summary = "Update an existing expenseGroup")
-    public String updateExpenseGroup(@RequestBody ExpenseGroup expenseGroup) {
-        return expenseGroupService.updateExpenseGroup(expenseGroup).getExGroupId();
+    public ExpenseGroup updateExpenseGroup(@RequestBody ExpenseGroup expenseGroup) {
+        return expenseGroupService.updateExpenseGroup(expenseGroup);
     }
 
     @DeleteMapping("/delete/{exGroupId}")
     @Operation(summary = "Delete an existing expenseGroup")
-    public String deleteExpenseGroup(@PathVariable String exGroupId) {
-        expenseGroupService.deleteExpenseGroup(exGroupId);
-        return exGroupId;
+    public ExpenseGroup deleteExpenseGroup(@PathVariable String exGroupId) {
+        return expenseGroupService.deleteExpenseGroup(exGroupId);
     }
 
     @GetMapping("/user/{userId}")

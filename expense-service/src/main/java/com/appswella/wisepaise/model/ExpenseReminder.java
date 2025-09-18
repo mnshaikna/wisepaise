@@ -16,8 +16,13 @@ public class ExpenseReminder {
     private String reminderName;
     private String reminderDescription;
     private String reminderDate;
+    private boolean reminderIsRecurring;
+    private boolean reminderIsActive;
+    private String reminderRecurrencePattern;
+    private String reminderRecurrenceEndDate;
+    private String reminderRecurrenceInterval;
     private String reminderCreatedDate;
     private String reminderAmount;
-    private boolean reminderActive;
+    private String reminderAmountType;
     private String reminderUserId;
 }

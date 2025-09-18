@@ -16,13 +16,16 @@ import java.util.List;
 public class Expense {
     @Id
     private String expenseId;
-    private String expenseGroupId;
     private String expenseTitle;
     private String expenseNote;
     private double expenseAmount;
+    private String expenseSpendType;
     private String expenseDate;
     private String expenseCategory;
+    private String expensesSubCategory;
+    private String expensePaymentMethod;
     private String expensePaidBy;
     private List<String> expensePaidTo;
     private String expenseReceiptURL;
+    private String expenseUserId;
 }

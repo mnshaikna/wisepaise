@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -40,9 +41,11 @@ public class ExpenseController {
         return expenseService.updateExpense(expense);
     }
 
-    @GetMapping("/group/{groupId}")
-    @Operation(summary = "Get all expenses by group id")
-    public Optional<Expense> getExpensesByExGroupId(@PathVariable String groupId) {
-        return expenseService.getExpensesByExGroupId(groupId);
+    @GetMapping("/user/{userId}")
+    @Operation(summary = "Get all expenses by user id")
+    public List<Expense> getAllExpensesByUserId(@PathVariable String userId) {
+        return expenseService.getAllExpensesByUserId(userId);
+
     }
+
 }

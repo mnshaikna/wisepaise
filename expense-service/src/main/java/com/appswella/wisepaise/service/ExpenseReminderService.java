@@ -16,6 +16,7 @@ public class ExpenseReminderService {
 
     public ExpenseReminder createExpenseReminder(ExpenseReminder expenseReminder) {
         try {
+            expenseReminder.setReminderId(null);
             return expenseReminderRepository.save(expenseReminder);
         } catch (Exception e) {
             throw new RuntimeException("Failed to create expense reminder: " + e.getMessage());
@@ -41,6 +42,8 @@ public class ExpenseReminderService {
                 throw new ResourceNotFoundException("ExpenseReminder", "userId", id);
             }
             return reminders;
+        } catch (ResourceNotFoundException ex) {
+            throw ex;
         } catch (Exception e) {
             throw new RuntimeException("Failed to retrieve expense reminders for user: " + e.getMessage());
         }
