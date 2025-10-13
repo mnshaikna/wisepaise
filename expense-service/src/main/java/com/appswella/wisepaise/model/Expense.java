@@ -22,7 +22,7 @@ public class Expense {
     private String expenseSpendType;
     private String expenseDate;
     private String expenseCategory;
-    private String expensesSubCategory;
+    private String expenseSubCategory;
     private String expensePaymentMethod;
     private String expensePaidBy;
     private List<String> expensePaidTo;

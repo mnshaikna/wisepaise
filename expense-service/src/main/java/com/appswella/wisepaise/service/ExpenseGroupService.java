@@ -5,6 +5,7 @@ import com.appswella.wisepaise.model.Expense;
 import com.appswella.wisepaise.model.ExpenseGroup;
 import com.appswella.wisepaise.repository.ExpenseGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public class ExpenseGroupService {
             System.out.println("totalExpenses:::" + totalExpenses);
             System.out.println("totalIncome:::" + totalIncome);
             for (Expense expense : expenses) {
-                expense.setExpenseId(null);
+               // expense.setExpenseId(null);
                 if ("income".equalsIgnoreCase(expense.getExpenseSpendType())) {
                     totalIncome += expense.getExpenseAmount();
                 } else {
@@ -65,7 +66,8 @@ public class ExpenseGroupService {
 
     public List<ExpenseGroup> getAllExpenseGroupsByUserId(String userId) {
         try {
-            List<ExpenseGroup> groups = expenseGroupRepository.findByExGroupOwnerId(userId);
+            Sort sort = Sort.by(Sort.Direction.DESC, "exGroupCreatedOn");
+            List<ExpenseGroup> groups = expenseGroupRepository.findByExGroupOwnerId(userId,sort);
             System.out.println("List Size:::" + groups.size());
             if (groups.isEmpty()) {
                 System.out.println("Empty List - Throwing RNF Error");

@@ -2,13 +2,11 @@ package com.appswella.wisepaise.service;
 
 import com.appswella.wisepaise.exception.ResourceNotFoundException;
 import com.appswella.wisepaise.model.Expense;
-import com.appswella.wisepaise.model.ExpenseReminder;
 import com.appswella.wisepaise.repository.ExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ExpenseService {

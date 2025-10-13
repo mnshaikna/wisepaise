@@ -48,4 +48,20 @@ public class ExpenseReminderService {
             throw new RuntimeException("Failed to retrieve expense reminders for user: " + e.getMessage());
         }
     }
+
+    public ExpenseReminder deleteExpenseReminder(String reminderId) {
+        try {
+            ExpenseReminder expenseReminder = expenseReminderRepository.findById(reminderId).orElseThrow(() -> new ResourceNotFoundException("ExpenseReminder", "id", reminderId));
+            expenseReminderRepository.delete(expenseReminder);
+            return expenseReminder;
+        } catch (ResourceNotFoundException ex) {
+            throw ex;
+        }
+    }
+
+    public ExpenseReminder updateExpenseReminder(ExpenseReminder expenseReminder) {
+        expenseReminderRepository.findById(expenseReminder.getReminderId()).orElseThrow(() -> new ResourceNotFoundException("ExpenseReminder", "id", expenseReminder.getReminderId()));
+
+        return expenseReminderRepository.save(expenseReminder);
+    }
 }
