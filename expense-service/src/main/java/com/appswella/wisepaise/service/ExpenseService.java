@@ -24,7 +24,7 @@ public class ExpenseService {
 
     public String deleteExpense(String expenseId) {
         if (!expenseRepository.existsById(expenseId)) {
-            throw new ResourceNotFoundException("Expense not found with id: " + expenseId);
+            throw new ResourceNotFoundException("Expense", "id", expenseId);
         }
         expenseRepository.deleteById(expenseId);
         return expenseId;
