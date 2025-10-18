@@ -18,7 +18,7 @@ public class UserController {
 
     @PostMapping("/create")
     @Operation(summary = "Create a new User")
-    public User createUser(User user) {
+    public User createUser(@RequestBody User user) {
         return userService.createUser(user);
     }
 
@@ -35,13 +35,13 @@ public class UserController {
 
     @PutMapping("/update")
     @Operation(summary = "Update a User")
-    public User updateUser(User user) {
+    public User updateUser(@RequestBody User user) {
         return userService.updateUser(user);
     }
 
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Delete a User")
-    public void deleteUser(String id) {
+    public void deleteUser(@PathVariable String id) {
         userService.deleteUser(id);
     }
 }

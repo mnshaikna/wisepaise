@@ -10,4 +10,6 @@ import java.util.Optional;
 
 public interface ExpenseRepository extends MongoRepository<Expense, String> {
     List<Expense> findByExpenseUserId(String id);
+    void deleteByExpenseUserId(String userId);
+
 }

@@ -11,14 +11,14 @@ import org.springframework.context.annotation.Configuration;
 public class OpenAPIConfig {
 
     @Bean
-    public OpenAPI wisecentOpenAPI() {
+    public OpenAPI wisePaisaOpenAPI() {
         return new OpenAPI()
                 .info(new Info().title("WiseCent API")
-                        .description("REST API documentation for WiseCent application")
+                        .description("REST API documentation for WisePaisa application")
                         .version("v1.0.0")
                         .contact(new Contact()
-                                .name("WiseCent Team")
-                                .email("contact@wisecent.com"))
+                                .name("WisePaisa Team")
+                                .email("contact@wisepaisa.com"))
                         .license(new License()
                                 .name("Apache 2.0")
                                 .url("https://www.apache.org/licenses/LICENSE-2.0.html")));

@@ -8,4 +8,6 @@ import java.util.List;
 public interface ExpenseReminderRepository extends MongoRepository<ExpenseReminder, String> {
 
     List<ExpenseReminder> findByReminderUserId(String id);
+    void deleteByReminderUserId(String userId);
+
 }

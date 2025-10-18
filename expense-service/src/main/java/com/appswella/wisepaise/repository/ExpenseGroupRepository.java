@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface ExpenseGroupRepository extends MongoRepository<ExpenseGroup, String> {
     List<ExpenseGroup> findByExGroupOwnerId(String userId, Sort sort);
+    void deleteByExGroupOwnerId(String userId);
+
 }
