@@ -22,10 +22,10 @@ public class UserController {
         return userService.createUser(user);
     }
 
-    @GetMapping("/get/{id}")
-    @Operation(summary = "Get a User by Id")
-    public User getUserById(@PathVariable String id) {
-        return userService.getUserById(id);
+    @GetMapping("/get/{emailId}")
+    @Operation(summary = "Get a User by EmailId")
+    public User getUserByEmailId(@PathVariable String emailId) {
+        return userService.getUserByEmailId(emailId);
     }
     @GetMapping("/all")
     @Operation(summary = "Get all Users")

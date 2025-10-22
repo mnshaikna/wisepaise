@@ -23,10 +23,9 @@ public class ExpenseGroup
     private String exGroupImageURL;
     private String exGroupCreatedOn;
     private boolean exGroupShared;
-    private List<String> exGroupMembers;
+    private List<User> exGroupMembers;
     private List<Expense> expenses;
     private String exGroupOwnerId;
     private double exGroupIncome;
     private double exGroupExpenses;
-
 }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -35,8 +36,8 @@ public class UserService {
         return userRepo.save(user);
     }
 
-    public User getUserById(String id) {
-        return userRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+    public User getUserByEmailId(String emailId) {
+        return userRepo.findByUserEmail(emailId).orElseThrow(() -> new ResourceNotFoundException("User", "id", emailId));
     }
 
     public List<User> getAllUsers() {

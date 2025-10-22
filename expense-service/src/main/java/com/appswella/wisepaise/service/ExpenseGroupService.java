@@ -36,7 +36,7 @@ public class ExpenseGroupService {
             System.out.println("totalExpenses:::" + totalExpenses);
             System.out.println("totalIncome:::" + totalIncome);
             for (Expense expense : expenses) {
-               // expense.setExpenseId(null);
+                // expense.setExpenseId(null);
                 if ("income".equalsIgnoreCase(expense.getExpenseSpendType())) {
                     totalIncome += expense.getExpenseAmount();
                 } else {
@@ -67,10 +67,8 @@ public class ExpenseGroupService {
     public List<ExpenseGroup> getAllExpenseGroupsByUserId(String userId) {
         try {
             Sort sort = Sort.by(Sort.Direction.DESC, "exGroupCreatedOn");
-            List<ExpenseGroup> groups = expenseGroupRepository.findByExGroupOwnerId(userId,sort);
-            System.out.println("List Size:::" + groups.size());
+            List<ExpenseGroup> groups = expenseGroupRepository.findByExGroupOwnerId(userId, sort);
             if (groups.isEmpty()) {
-                System.out.println("Empty List - Throwing RNF Error");
                 throw new ResourceNotFoundException("No expense groups found for user with id: " + userId);
             }
             return groups;

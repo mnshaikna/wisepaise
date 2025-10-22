@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -24,8 +25,8 @@ public class Expense {
     private String expenseCategory;
     private String expenseSubCategory;
     private String expensePaymentMethod;
-    private String expensePaidBy;
-    private List<String> expensePaidTo;
+    private Map<String, ?> expensePaidBy;
+    private List<Map<String, ?>> expensePaidTo;
     private String expenseReceiptURL;
     private String expenseUserId;
 }
