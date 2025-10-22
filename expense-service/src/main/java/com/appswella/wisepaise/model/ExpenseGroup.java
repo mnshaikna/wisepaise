@@ -25,7 +25,7 @@ public class ExpenseGroup
     private boolean exGroupShared;
     private List<User> exGroupMembers;
     private List<Expense> expenses;
-    private String exGroupOwnerId;
+    private User exGroupOwnerId;
     private double exGroupIncome;
     private double exGroupExpenses;
 }

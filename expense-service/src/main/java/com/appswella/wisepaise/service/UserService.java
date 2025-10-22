@@ -57,7 +57,7 @@ public class UserService {
 
         try {
             expenseRepo.deleteByExpenseUserId(id);
-            expenseGroupRepo.deleteByExGroupOwnerId(id);
+            expenseGroupRepo.deleteByGroupOwnerId(id);
             expenseReminderRepo.deleteByReminderUserId(id);
             userRepo.deleteById(id);
         } catch (Exception e) {

@@ -8,7 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ExpenseGroupService {
@@ -67,11 +70,23 @@ public class ExpenseGroupService {
     public List<ExpenseGroup> getAllExpenseGroupsByUserId(String userId) {
         try {
             Sort sort = Sort.by(Sort.Direction.DESC, "exGroupCreatedOn");
-            List<ExpenseGroup> groups = expenseGroupRepository.findByExGroupOwnerId(userId, sort);
-            if (groups.isEmpty()) {
+
+            // Groups where user is the owner
+            List<ExpenseGroup> ownedGroups = expenseGroupRepository.findByGroupOwnerId(userId, sort);
+            // Groups where user is a member
+            List<ExpenseGroup> memberGroups = expenseGroupRepository.findByMemberUserId(userId, sort);
+
+            //Combine both lists
+            Set<ExpenseGroup> allGroupsSet = new LinkedHashSet<>();
+            allGroupsSet.addAll(ownedGroups);
+            allGroupsSet.addAll(memberGroups);
+
+            List<ExpenseGroup> allGroups = new ArrayList<>(allGroupsSet);// avoids duplicates
+
+            if (allGroups.isEmpty()) {
                 throw new ResourceNotFoundException("No expense groups found for user with id: " + userId);
             }
-            return groups;
+            return allGroups;
         } catch (ResourceNotFoundException ex) {
             throw ex;
         } catch (Exception e) {
