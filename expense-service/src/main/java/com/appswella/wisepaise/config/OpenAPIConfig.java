@@ -13,7 +13,7 @@ public class OpenAPIConfig {
     @Bean
     public OpenAPI wisePaisaOpenAPI() {
         return new OpenAPI()
-                .info(new Info().title("WiseCent API")
+                .info(new Info().title("WisePaisa API")
                         .description("REST API documentation for WisePaisa application")
                         .version("v1.0.0")
                         .contact(new Contact()

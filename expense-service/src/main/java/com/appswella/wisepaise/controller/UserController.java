@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-@Tag(name = "Users", description = "Users API")
+@Tag(name = "Users", description = "APIs to manage Users")
 public class UserController {
     @Autowired
     UserService userService;
@@ -22,11 +22,18 @@ public class UserController {
         return userService.createUser(user);
     }
 
-    @GetMapping("/get/{emailId}")
+    @GetMapping("/get/emailId/{emailId}")
     @Operation(summary = "Get a User by EmailId")
     public User getUserByEmailId(@PathVariable String emailId) {
         return userService.getUserByEmailId(emailId);
     }
+
+    @GetMapping("/get/userId/{userId}")
+    @Operation(summary = "Get a User by EmailId")
+    public User getUserByUserId(@PathVariable String userId) {
+        return userService.getUserByUserId(userId);
+    }
+
     @GetMapping("/all")
     @Operation(summary = "Get all Users")
     public List<User> getAllUsers() {

@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/expenseGroup")
-@Tag(name = "ExpenseGroup", description = "The ExpenseGroup API")
+@Tag(name = "ExpenseGroup", description = "APIs to manage Expense Groups. Expenses within the groups are also managed with this.")
 public class ExpenseGroupController {
     @Autowired
     private ExpenseGroupService expenseGroupService;

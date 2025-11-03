@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/expenseReminder")
-@Tag(name = "Expense Reminder", description = "Expense reminder API")
+@Tag(name = "Expense Reminder", description = "APIs to manage Expense Reminders")
 public class ExpenseReminderController {
     @Autowired
     private ExpenseReminderService expenseReminderService;

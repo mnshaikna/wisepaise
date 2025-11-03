@@ -25,8 +25,8 @@ public class Expense {
     private String expenseCategory;
     private String expenseSubCategory;
     private String expensePaymentMethod;
-    private Map<String, ?> expensePaidBy;
-    private List<Map<String, ?>> expensePaidTo;
+    private Map<String, Object> expensePaidBy;
+    private List<Map<String, Object>> expensePaidTo;
     private String expenseReceiptURL;
-    private String expenseUserId;
+    private User expenseUserId;
 }

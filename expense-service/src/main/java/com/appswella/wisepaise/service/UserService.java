@@ -64,4 +64,8 @@ public class UserService {
             throw new RuntimeException("Error deleting user and related data: " + e.getMessage(), e);
         }
     }
+
+    public User getUserByUserId(String userId) {
+        return userRepo.findByUserId(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+    }
 }

@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class ExpenseGroupService {
@@ -36,25 +33,81 @@ public class ExpenseGroupService {
         try {
             List<Expense> expenses = expenseGroup.getExpenses();
             double totalExpenses = 0, totalIncome = 0;
-            System.out.println("totalExpenses:::" + totalExpenses);
-            System.out.println("totalIncome:::" + totalIncome);
+            Map<String, Double> balances = new HashMap<>();
+
             for (Expense expense : expenses) {
-                // expense.setExpenseId(null);
                 if ("income".equalsIgnoreCase(expense.getExpenseSpendType())) {
                     totalIncome += expense.getExpenseAmount();
                 } else {
                     totalExpenses += expense.getExpenseAmount();
                 }
+
+                if (expenseGroup.isExGroupShared()) {
+                    double share = expense.getExpenseAmount() / expense.getExpensePaidTo().size();
+                    System.out.println("expense.getExpenseAmount():::" + expense.getExpenseAmount());
+                    System.out.println("expense.getExpensePaidTo().size():::" + expense.getExpensePaidTo().size());
+                    System.out.println("Share:::" + share);
+                    balances.put(expense.getExpensePaidBy().get("userId").toString(), balances.getOrDefault(expense.getExpensePaidBy().get("userId").toString(), 0.0) + expense.getExpenseAmount());
+
+                    for (Map<String, Object> paidTo : expense.getExpensePaidTo()) {
+                        double newBalance = Math.round((balances.getOrDefault(paidTo.get("userId").toString(), 0.0) - share) * 100.0) / 100.0;
+                        balances.put(paidTo.get("userId").toString(), newBalance);
+                    }
+                }
             }
-            System.out.println("totalIncome After:::" + totalIncome);
-            System.out.println("totalExpenses After:::" + totalExpenses);
+            System.out.println("balances:::" + balances);
             expenseGroup.setExGroupIncome(totalIncome);
             expenseGroup.setExGroupExpenses(totalExpenses);
             expenseGroup.setExpenses(expenses);
+
+            if (expenseGroup.isExGroupShared()) {
+                expenseGroup.setExGroupMembersBalance(balances);
+                System.out.println("expenseGroup1:::" + expenseGroup);
+                List<Map<String, Object>> settlements = simplifyDebts(balances);
+                System.out.println("expenseGroup2:::" + expenseGroup);
+                expenseGroup.setExGroupMembersSettlements(settlements);
+            }
+            System.out.println("expenseGroup3:::" + expenseGroup);
             return expenseGroupRepository.save(expenseGroup);
         } catch (Exception e) {
             throw new RuntimeException("Failed to update expense group: " + e.getMessage());
         }
+    }
+
+    private List<Map<String, Object>> simplifyDebts(Map<String, Double> balances) {
+        // Create a copy of the balances to avoid modifying the original
+        Map<String, Double> balancesCopy = new HashMap<>(balances);
+
+        List<Map.Entry<String, Double>> debtors = balancesCopy.entrySet().stream()
+                .filter(e -> e.getValue() > 0)
+                .toList();
+        List<Map.Entry<String, Double>> creditors = balancesCopy.entrySet().stream()
+                .filter(e -> e.getValue() < 0)
+                .toList();
+
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        int i = 0, j = 0;
+
+        while (i < debtors.size() && j < creditors.size()) {
+            double debit = debtors.get(i).getValue();
+            double credit = -creditors.get(j).getValue();
+            double settled = Math.min(debit, credit);
+
+            Map<String, Object> res = new HashMap<>();
+            res.put("fromUserId", creditors.get(i).getKey());
+            res.put("toUserId", debtors.get(j).getKey());
+            res.put("amount", settled);
+            result.add(res);
+
+            // Update the copy, not the original map
+            debtors.get(i).setValue(debit - settled);
+            creditors.get(j).setValue(settled - credit);
+
+            if (Math.abs(debtors.get(i).getValue()) < 0.01) i++;
+            if (Math.abs(creditors.get(j).getValue()) < 0.01) j++;
+        }
+        return result;
     }
 
     public ExpenseGroup deleteExpenseGroup(String exGroupId) {
