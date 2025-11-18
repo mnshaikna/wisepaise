@@ -29,7 +29,7 @@ public class UserController {
     }
 
     @GetMapping("/get/userId/{userId}")
-    @Operation(summary = "Get a User by EmailId")
+    @Operation(summary = "Get a User by userId")
     public User getUserByUserId(@PathVariable String userId) {
         return userService.getUserByUserId(userId);
     }

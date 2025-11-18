@@ -1,13 +1,14 @@
 package com.appswella.wisepaise.repository;
 
-import com.appswella.wisepaise.model.ExpenseGroup;
 import com.appswella.wisepaise.model.SavingsGoal;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface SavingsGoalRepository extends MongoRepository<SavingsGoal, String> {
 
     @Query("{ 'savingsGoalUser.userId': ?0 }")

@@ -30,83 +30,84 @@ public class ExpenseGroupService {
         if (expenseGroup.getExGroupId() == null || !expenseGroupRepository.existsById(expenseGroup.getExGroupId())) {
             throw new ResourceNotFoundException("ExpenseGroup", "id", expenseGroup.getExGroupId());
         }
-        try {
-            List<Expense> expenses = expenseGroup.getExpenses();
-            double totalExpenses = 0, totalIncome = 0;
-            Map<String, Double> balances = new HashMap<>();
+        List<Expense> expenses = expenseGroup.getExpenses();
+        double totalExpenses = 0, totalIncome = 0;
+        Map<String, Double> balances = new HashMap<>();
 
-            for (Expense expense : expenses) {
-                if ("income".equalsIgnoreCase(expense.getExpenseSpendType())) {
-                    totalIncome += expense.getExpenseAmount();
-                } else {
-                    totalExpenses += expense.getExpenseAmount();
-                }
-
-                if (expenseGroup.isExGroupShared()) {
-                    double share = expense.getExpenseAmount() / expense.getExpensePaidTo().size();
-                    System.out.println("expense.getExpenseAmount():::" + expense.getExpenseAmount());
-                    System.out.println("expense.getExpensePaidTo().size():::" + expense.getExpensePaidTo().size());
-                    System.out.println("Share:::" + share);
-                    balances.put(expense.getExpensePaidBy().get("userId").toString(), balances.getOrDefault(expense.getExpensePaidBy().get("userId").toString(), 0.0) + expense.getExpenseAmount());
-
-                    for (Map<String, Object> paidTo : expense.getExpensePaidTo()) {
-                        double newBalance = Math.round((balances.getOrDefault(paidTo.get("userId").toString(), 0.0) - share) * 100.0) / 100.0;
-                        balances.put(paidTo.get("userId").toString(), newBalance);
-                    }
-                }
+        for (Expense expense : expenses) {
+            if ("income".equalsIgnoreCase(expense.getExpenseSpendType())) {
+                totalIncome += expense.getExpenseAmount();
+            } else {
+                totalExpenses += expense.getExpenseAmount();
             }
-            System.out.println("balances:::" + balances);
-            expenseGroup.setExGroupIncome(totalIncome);
-            expenseGroup.setExGroupExpenses(totalExpenses);
-            expenseGroup.setExpenses(expenses);
 
             if (expenseGroup.isExGroupShared()) {
-                expenseGroup.setExGroupMembersBalance(balances);
-                System.out.println("expenseGroup1:::" + expenseGroup);
-                List<Map<String, Object>> settlements = simplifyDebts(balances);
-                System.out.println("expenseGroup2:::" + expenseGroup);
-                expenseGroup.setExGroupMembersSettlements(settlements);
+                double share = expense.getExpenseAmount() / expense.getExpensePaidTo().size();
+                System.out.println("share:::" + share);
+                balances.put(expense.getExpensePaidBy().get("userId").toString(), balances.getOrDefault(expense.getExpensePaidBy().get("userId").toString(), 0.0) + expense.getExpenseAmount());
+
+
+                for (Map<String, Object> paidTo : expense.getExpensePaidTo()) {
+                    double newBalance = Math.round(balances.getOrDefault(paidTo.get("userId").toString(), 0.0) - share);
+                    balances.put(paidTo.get("userId").toString(), newBalance);
+                }
             }
-            System.out.println("expenseGroup3:::" + expenseGroup);
-            return expenseGroupRepository.save(expenseGroup);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to update expense group: " + e.getMessage());
         }
+        System.out.println("balances:::" + balances);
+        expenseGroup.setExGroupIncome(totalIncome);
+        expenseGroup.setExGroupExpenses(totalExpenses);
+        expenseGroup.setExpenses(expenses);
+
+        if (expenseGroup.isExGroupShared()) {
+            expenseGroup.setExGroupMembersBalance(balances);
+            System.out.println("expenseGroup1:::" + expenseGroup);
+            List<Map<String, Object>> settlements = simplifyDebts(balances);
+            System.out.println("expenseGroup2:::" + expenseGroup);
+            expenseGroup.setExGroupMembersSettlements(settlements);
+        }
+        System.out.println("expenseGroup3:::" + expenseGroup);
+        return expenseGroupRepository.save(expenseGroup);
     }
 
     private List<Map<String, Object>> simplifyDebts(Map<String, Double> balances) {
-        // Create a copy of the balances to avoid modifying the original
-        Map<String, Double> balancesCopy = new HashMap<>(balances);
+        // Create a list of debtors (negative balance) and creditors (positive balance)
+        List<Map.Entry<String, Double>> creditors = new ArrayList<>();
+        List<Map.Entry<String, Double>> debtors = new ArrayList<>();
 
-        List<Map.Entry<String, Double>> debtors = balancesCopy.entrySet().stream()
-                .filter(e -> e.getValue() > 0)
-                .toList();
-        List<Map.Entry<String, Double>> creditors = balancesCopy.entrySet().stream()
-                .filter(e -> e.getValue() < 0)
-                .toList();
+        for (var e : balances.entrySet()) {
+            if (e.getValue() > 0) creditors.add(new AbstractMap.SimpleEntry<>(e.getKey(), e.getValue()));
+            else if (e.getValue() < 0) debtors.add(new AbstractMap.SimpleEntry<>(e.getKey(), -e.getValue()));
+            // store positive values for easier math
+        }
 
         List<Map<String, Object>> result = new ArrayList<>();
-
         int i = 0, j = 0;
 
-        while (i < debtors.size() && j < creditors.size()) {
-            double debit = debtors.get(i).getValue();
-            double credit = -creditors.get(j).getValue();
-            double settled = Math.min(debit, credit);
+        while (i < creditors.size() && j < debtors.size()) {
 
-            Map<String, Object> res = new HashMap<>();
-            res.put("fromUserId", creditors.get(i).getKey());
-            res.put("toUserId", debtors.get(j).getKey());
-            res.put("amount", settled);
-            result.add(res);
+            double amountCreditorShouldReceive = creditors.get(i).getValue();
+            double amountDebtorShouldPay = debtors.get(j).getValue();
 
-            // Update the copy, not the original map
-            debtors.get(i).setValue(debit - settled);
-            creditors.get(j).setValue(settled - credit);
+            double settled = Math.min(amountCreditorShouldReceive, amountDebtorShouldPay);
 
-            if (Math.abs(debtors.get(i).getValue()) < 0.01) i++;
-            if (Math.abs(creditors.get(j).getValue()) < 0.01) j++;
+            // debtor pays creditor
+            Map<String, Object> settlement = new HashMap<>();
+            settlement.put("fromUserId", debtors.get(j).getKey());
+            settlement.put("toUserId", creditors.get(i).getKey());
+            settlement.put("amount", settled);
+            result.add(settlement);
+
+            // Update balances
+            creditors.get(i).setValue(amountCreditorShouldReceive - settled);
+            debtors.get(j).setValue(amountDebtorShouldPay - settled);
+
+            // Move pointers
+            if (creditors.get(i).getValue() < 0.01) i++;
+            if (debtors.get(j).getValue() < 0.01) j++;
         }
+
+        System.out.println("results:::" + result.toString());
+
         return result;
     }
 
