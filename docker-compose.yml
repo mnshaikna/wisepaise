@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mnshaikna
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: wisepaise
+    volumes:
+      - mongo-data:/data/db
+
+  eureka-server:
+    build: ./eureka-server
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    depends_on:
+      - mongo
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8083:8083"
+    depends_on:
+      - eureka-server
+      - expense-service
+
+  expense-service:
+    build: ./expense-service
+    container_name: expense-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mnshaikna:password@mongo:27017/wisepaise?authSource=admin
+    depends_on:
+      - mongo
+      - eureka-server
+
+volumes:
+  mongo-data:
