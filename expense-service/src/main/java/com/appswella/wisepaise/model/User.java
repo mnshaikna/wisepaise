@@ -1,5 +1,6 @@
 package com.appswella.wisepaise.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,5 +19,6 @@ public class User {
     private String userEmail;
     private String userImageUrl;
     private String userCreatedOn;
+    @JsonProperty("isRegistered")
     private boolean isRegistered;
 }
