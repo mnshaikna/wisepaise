@@ -13,8 +13,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class User {
     @Id
     private String userId;
+    private String userGoogleId;
     private String userName;
     private String userEmail;
     private String userImageUrl;
     private String userCreatedOn;
+    private boolean isRegistered;
 }
