@@ -28,7 +28,7 @@ public class SavingsGoalService {
             initialTrx.setSavingsGoalTrxId(Integer.toString(rand.nextInt(1000000)));
             initialTrx.setSavingsGoalTrxName("Initial Savings");
             initialTrx.setSavingsGoalTrxAmount(savingsGoal.getSavingsGoalCurrentAmount());
-            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             String dateStr = sdf.format(new Date());
             initialTrx.setSavingsGoalTrxCreatedOn(dateStr);
 

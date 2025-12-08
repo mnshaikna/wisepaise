@@ -18,8 +18,8 @@ public class ExpenseController {
 
     @PostMapping("/create")
     @Operation(summary = "Create a new expense")
-    public String createExpense(@RequestBody Expense expense) {
-        return expenseService.createExpense(expense).getExpenseId();
+    public Expense createExpense(@RequestBody Expense expense) {
+        return expenseService.createExpense(expense);
     }
 
     @GetMapping("/get/{expenseId}")
