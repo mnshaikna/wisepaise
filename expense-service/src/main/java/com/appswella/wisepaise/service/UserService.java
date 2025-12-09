@@ -30,7 +30,7 @@ public class UserService {
         System.out.println("UserData:::" + user.toString());
         if (userRepo.existsById(user.getUserId())) {
             System.out.println("User Exists");
-            return user;
+            return userRepo.findByUserId(user.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User", "id", user.getUserId()));
         }
         System.out.println("User does NOT Exist");
         return userRepo.save(user);
