@@ -33,6 +33,9 @@ public class UserService {
             return userRepo.findByUserId(user.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User", "id", user.getUserId()));
         }
         System.out.println("User does NOT Exist");
+        if (user.getUserId().isEmpty()) {
+            user.setUserId(null);
+        }
         return userRepo.save(user);
     }
 
