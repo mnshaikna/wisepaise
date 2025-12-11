@@ -28,7 +28,7 @@ public class UserService {
 
     public User createUser(User user) {
         System.out.println("UserData:::" + user.toString());
-        if (userRepo.existsById(user.getUserId())) {
+        if (userRepo.existsByUserEmail(user.getUserEmail())) {
             System.out.println("User Exists");
             return userRepo.findByUserId(user.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User", "id", user.getUserId()));
         }
