@@ -24,5 +24,5 @@ public class ExpenseReminder {
     private String reminderCreatedDate;
     private String reminderAmount;
     private String reminderAmountType;
-    private User reminderUserId;
+    private String reminderUserId;
 }
