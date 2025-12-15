@@ -11,10 +11,10 @@ import java.util.List;
 @Repository
 public interface SavingsGoalRepository extends MongoRepository<SavingsGoal, String> {
 
-    @Query("{ 'savingsGoalUser.userId': ?0 }")
+    @Query("{ 'savingsGoalUser': ?0 }")
     List<SavingsGoal> findByUserId(String userId, Sort sort);
 
-    @Query(value = "{ 'savingsGoalUser.userId': ?0 }", delete = true)
+    @Query(value = "{ 'savingsGoalUser': ?0 }", delete = true)
     void deleteByGroupOwnerId(String userId);
 
 }

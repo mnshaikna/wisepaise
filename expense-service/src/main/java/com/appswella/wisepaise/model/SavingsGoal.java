@@ -18,7 +18,7 @@ public class SavingsGoal {
     private String savingsGoalId;
     private String savingsGoalName;
     private String savingsGoalImageUrl;
-    private Map<String, Object> savingsGoalUser;
+    private String savingsGoalUser;
     private double savingsGoalTargetAmount;
     private double savingsGoalCurrentAmount;
     private String savingsGoalTargetDate;
