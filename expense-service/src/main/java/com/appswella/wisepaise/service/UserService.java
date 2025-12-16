@@ -27,15 +27,16 @@ public class UserService {
     private ExpenseReminderRepository expenseReminderRepo;
 
     public User createUser(User user) {
-        System.out.println("UserData:::" + user.toString());
         if (userRepo.existsByUserEmail(user.getUserEmail())) {
-            System.out.println("User Exists");
-            return userRepo.findByUserId(user.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User", "id", user.getUserId()));
+            User thisUser = userRepo.findByUserId(user.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User", "id", user.getUserId()));
+            if (!thisUser.isRegistered()) {
+                return updateUser(user);
+            } else {
+                return thisUser;
+            }
         }
-        System.out.println("User does NOT Exist");
-        if (user.getUserId().isEmpty()) {
-            user.setUserId(null);
-        }
+        if (user.getUserId().isEmpty()) user.setUserId(null);
+
         return userRepo.save(user);
     }
 
@@ -48,8 +49,7 @@ public class UserService {
     }
 
     public User updateUser(User user) {
-        if (!userRepo.existsById(user.getUserId()))
-            throw new ResourceNotFoundException("User", "id", user.getUserId());
+        if (!userRepo.existsById(user.getUserId())) throw new ResourceNotFoundException("User", "id", user.getUserId());
         return userRepo.save(user);
     }
 
