@@ -30,11 +30,8 @@ public class ExpenseGroup {
     private List<Expense> expenses;
     private String exGroupOwnerId;
 
-    @Field(targetType = FieldType.DECIMAL128)
-    private BigDecimal exGroupIncome;
-
-    @Field(targetType = FieldType.DECIMAL128)
-    private BigDecimal exGroupExpenses;
+    private double exGroupIncome;
+    private double exGroupExpenses;
 
     private Map<String, BigDecimal> exGroupMembersBalance;
     private List<Map<String, Object>> exGroupMembersSettlements;

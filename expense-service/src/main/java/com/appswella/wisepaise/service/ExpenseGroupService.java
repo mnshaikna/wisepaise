@@ -33,24 +33,24 @@ public class ExpenseGroupService {
             throw new ResourceNotFoundException("ExpenseGroup", "id", expenseGroup.getExGroupId());
         }
         List<Expense> expenses = expenseGroup.getExpenses();
-        BigDecimal totalExpenses = BigDecimal.ZERO, totalIncome = BigDecimal.ZERO;
+        Double totalExpenses = 0.0, totalIncome = 0.0;
         Map<String, BigDecimal> balances = new HashMap<>();
 
         for (Expense expense : expenses) {
             if ("income".equalsIgnoreCase(expense.getExpenseSpendType())) {
-                totalIncome = totalIncome.add(expense.getExpenseAmount());
+                totalIncome += expense.getExpenseAmount();
             } else {
-                totalExpenses = totalExpenses.add(expense.getExpenseAmount());
+                totalExpenses += expense.getExpenseAmount();
             }
 
             if (expenseGroup.isExGroupShared()) {
-                BigDecimal share = expense.getExpenseAmount().divide(
+                BigDecimal share = BigDecimal.valueOf(expense.getExpenseAmount()).divide(
                         BigDecimal.valueOf(expense.getExpensePaidTo().size()),
                         2,
                         RoundingMode.HALF_UP
                 );
                 System.out.println("share:::" + share);
-                balances.put(expense.getExpensePaidBy(), balances.getOrDefault(expense.getExpensePaidBy(), BigDecimal.ZERO).add(expense.getExpenseAmount()));
+                balances.put(expense.getExpensePaidBy(), balances.getOrDefault(expense.getExpensePaidBy(), BigDecimal.ZERO).add(BigDecimal.valueOf(expense.getExpenseAmount())));
 
 
                 for (String paidTo : expense.getExpensePaidTo()) {
