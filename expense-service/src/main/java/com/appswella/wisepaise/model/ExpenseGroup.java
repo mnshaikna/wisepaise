@@ -6,6 +6,8 @@ import lombok.Generated;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -27,8 +29,13 @@ public class ExpenseGroup {
     private List<String> exGroupMembers;
     private List<Expense> expenses;
     private String exGroupOwnerId;
+
+    @Field(targetType = FieldType.DECIMAL128)
     private BigDecimal exGroupIncome;
+
+    @Field(targetType = FieldType.DECIMAL128)
     private BigDecimal exGroupExpenses;
+
     private Map<String, BigDecimal> exGroupMembersBalance;
     private List<Map<String, Object>> exGroupMembersSettlements;
 }
