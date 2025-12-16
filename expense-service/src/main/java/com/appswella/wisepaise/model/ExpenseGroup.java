@@ -23,9 +23,9 @@ public class ExpenseGroup {
     private String exGroupImageURL;
     private String exGroupCreatedOn;
     private boolean exGroupShared;
-    private List<User> exGroupMembers;
+    private List<String> exGroupMembers;
     private List<Expense> expenses;
-    private User exGroupOwnerId;
+    private String exGroupOwnerId;
     private double exGroupIncome;
     private double exGroupExpenses;
     private Map<String, Double> exGroupMembersBalance;

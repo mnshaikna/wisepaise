@@ -11,12 +11,12 @@ import java.util.List;
 @Repository
 public interface ExpenseGroupRepository extends MongoRepository<ExpenseGroup, String> {
 
-    @Query("{ 'exGroupOwnerId.userId': ?0 }")
+    @Query("{ 'exGroupOwnerId': ?0 }")
     List<ExpenseGroup> findByGroupOwnerId(String userId, Sort sort);
 
-    @Query(value = "{ 'exGroupOwnerId.userId': ?0 }", delete = true)
+    @Query(value = "{ 'exGroupOwnerId': ?0 }", delete = true)
     void deleteByGroupOwnerId(String userId);
 
-    @Query("{ 'exGroupMembers.userId': ?0 }")
+    @Query("{ 'exGroupMembers': ?0 }")
     List<ExpenseGroup> findByMemberUserId(String userId, Sort sort);
 }
