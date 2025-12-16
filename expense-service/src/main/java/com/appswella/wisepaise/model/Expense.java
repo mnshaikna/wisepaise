@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +20,7 @@ public class Expense {
     private String expenseId;
     private String expenseTitle;
     private String expenseNote;
-    private double expenseAmount;
+    private BigDecimal expenseAmount;
     private String expenseSpendType;
     private String expenseDate;
     private String expenseCategory;

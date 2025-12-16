@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 @Service
@@ -31,24 +33,28 @@ public class ExpenseGroupService {
             throw new ResourceNotFoundException("ExpenseGroup", "id", expenseGroup.getExGroupId());
         }
         List<Expense> expenses = expenseGroup.getExpenses();
-        double totalExpenses = 0, totalIncome = 0;
-        Map<String, Double> balances = new HashMap<>();
+        BigDecimal totalExpenses = BigDecimal.ZERO, totalIncome = BigDecimal.ZERO;
+        Map<String, BigDecimal> balances = new HashMap<>();
 
         for (Expense expense : expenses) {
             if ("income".equalsIgnoreCase(expense.getExpenseSpendType())) {
-                totalIncome += expense.getExpenseAmount();
+                totalIncome = totalIncome.add(expense.getExpenseAmount());
             } else {
-                totalExpenses += expense.getExpenseAmount();
+                totalExpenses = totalExpenses.add(expense.getExpenseAmount());
             }
 
             if (expenseGroup.isExGroupShared()) {
-                double share = expense.getExpenseAmount() / expense.getExpensePaidTo().size();
+                BigDecimal share = expense.getExpenseAmount().divide(
+                        BigDecimal.valueOf(expense.getExpensePaidTo().size()),
+                        2,
+                        RoundingMode.HALF_UP
+                );
                 System.out.println("share:::" + share);
-                balances.put(expense.getExpensePaidBy(), balances.getOrDefault(expense.getExpensePaidBy(), 0.0) + expense.getExpenseAmount());
+                balances.put(expense.getExpensePaidBy(), balances.getOrDefault(expense.getExpensePaidBy(), BigDecimal.ZERO).add(expense.getExpenseAmount()));
 
 
                 for (String paidTo : expense.getExpensePaidTo()) {
-                    double newBalance = Math.round(balances.getOrDefault(paidTo, 0.0) - share);
+                    BigDecimal newBalance = (balances.getOrDefault(paidTo, BigDecimal.ZERO).subtract(share));
                     balances.put(paidTo, newBalance);
                 }
             }
@@ -69,14 +75,15 @@ public class ExpenseGroupService {
         return expenseGroupRepository.save(expenseGroup);
     }
 
-    private List<Map<String, Object>> simplifyDebts(Map<String, Double> balances) {
+    private List<Map<String, Object>> simplifyDebts(Map<String, BigDecimal> balances) {
         // Create a list of debtors (negative balance) and creditors (positive balance)
-        List<Map.Entry<String, Double>> creditors = new ArrayList<>();
-        List<Map.Entry<String, Double>> debtors = new ArrayList<>();
+        List<Map.Entry<String, BigDecimal>> creditors = new ArrayList<>();
+        List<Map.Entry<String, BigDecimal>> debtors = new ArrayList<>();
 
         for (var e : balances.entrySet()) {
-            if (e.getValue() > 0) creditors.add(new AbstractMap.SimpleEntry<>(e.getKey(), e.getValue()));
-            else if (e.getValue() < 0) debtors.add(new AbstractMap.SimpleEntry<>(e.getKey(), -e.getValue()));
+            int cmp = e.getValue().compareTo(BigDecimal.ZERO);
+            if (cmp > 0) creditors.add(new AbstractMap.SimpleEntry<>(e.getKey(), e.getValue()));
+            else if (cmp < 0) debtors.add(new AbstractMap.SimpleEntry<>(e.getKey(), e.getValue().abs()));
             // store positive values for easier math
         }
 
@@ -85,10 +92,10 @@ public class ExpenseGroupService {
 
         while (i < creditors.size() && j < debtors.size()) {
 
-            double amountCreditorShouldReceive = creditors.get(i).getValue();
-            double amountDebtorShouldPay = debtors.get(j).getValue();
+            BigDecimal amountCreditorShouldReceive = creditors.get(i).getValue();
+            BigDecimal amountDebtorShouldPay = debtors.get(j).getValue();
 
-            double settled = Math.min(amountCreditorShouldReceive, amountDebtorShouldPay);
+            BigDecimal settled = amountCreditorShouldReceive.min(amountDebtorShouldPay);
 
             // debtor pays creditor
             Map<String, Object> settlement = new HashMap<>();
@@ -98,15 +105,13 @@ public class ExpenseGroupService {
             result.add(settlement);
 
             // Update balances
-            creditors.get(i).setValue(amountCreditorShouldReceive - settled);
-            debtors.get(j).setValue(amountDebtorShouldPay - settled);
+            creditors.get(i).setValue(amountCreditorShouldReceive.subtract(settled));
+            debtors.get(j).setValue(amountDebtorShouldPay.subtract(settled));
 
             // Move pointers
-            if (creditors.get(i).getValue() < 0.01) i++;
-            if (debtors.get(j).getValue() < 0.01) j++;
+            if (creditors.get(i).getValue().compareTo(BigDecimal.ZERO) == 0) i++;
+            if (debtors.get(j).getValue().compareTo(BigDecimal.ZERO) == 0) j++;
         }
-
-        System.out.println("results:::" + result.toString());
 
         return result;
     }
