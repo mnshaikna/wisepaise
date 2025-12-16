@@ -10,10 +10,10 @@ import java.util.Optional;
 
 
 public interface ExpenseRepository extends MongoRepository<Expense, String> {
-    @Query(value = "{ 'expenseUserId.userId': ?0 }")
+    @Query(value = "{ 'expenseUserId': ?0 }")
     List<Expense> findByExpenseUserId(String id);
 
-    @Query(value = "{ 'expenseUserId.userId': ?0 }", delete = true)
+    @Query(value = "{ 'expenseUserId': ?0 }", delete = true)
     void deleteByExpenseUserId(String userId);
 
 }
