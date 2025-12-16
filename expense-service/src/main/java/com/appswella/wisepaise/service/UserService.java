@@ -28,15 +28,15 @@ public class UserService {
 
     public User createUser(User user) {
         if (userRepo.existsByUserEmail(user.getUserEmail())) {
-            User thisUser = userRepo.findByUserId(user.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User", "id", user.getUserId()));
+            User thisUser = userRepo.findByUserEmail(user.getUserEmail()).orElseThrow(() -> new ResourceNotFoundException("User", "email", user.getUserEmail()));
             if (!thisUser.isRegistered()) {
+                user.setUserId(thisUser.getUserId());
                 return updateUser(user);
             } else {
                 return thisUser;
             }
         }
         if (user.getUserId().isEmpty()) user.setUserId(null);
-
         return userRepo.save(user);
     }
 
