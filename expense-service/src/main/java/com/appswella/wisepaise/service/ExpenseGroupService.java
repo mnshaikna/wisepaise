@@ -44,12 +44,12 @@ public class ExpenseGroupService {
             if (expenseGroup.isExGroupShared()) {
                 double share = expense.getExpenseAmount() / expense.getExpensePaidTo().size();
                 System.out.println("share:::" + share);
-                balances.put(expense.getExpensePaidBy().get("userId").toString(), balances.getOrDefault(expense.getExpensePaidBy().get("userId").toString(), 0.0) + expense.getExpenseAmount());
+                balances.put(expense.getExpensePaidBy(), balances.getOrDefault(expense.getExpensePaidBy(), 0.0) + expense.getExpenseAmount());
 
 
-                for (Map<String, Object> paidTo : expense.getExpensePaidTo()) {
-                    double newBalance = Math.round(balances.getOrDefault(paidTo.get("userId").toString(), 0.0) - share);
-                    balances.put(paidTo.get("userId").toString(), newBalance);
+                for (String paidTo : expense.getExpensePaidTo()) {
+                    double newBalance = Math.round(balances.getOrDefault(paidTo, 0.0) - share);
+                    balances.put(paidTo, newBalance);
                 }
             }
         }
