@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @Data
 @Document(collection = "users")
 @AllArgsConstructor
@@ -19,6 +21,9 @@ public class User {
     private String userEmail;
     private String userImageUrl;
     private String userCreatedOn;
+
     @JsonProperty("isRegistered")
     private boolean isRegistered;
+
+    private List<String> userContacts;
 }

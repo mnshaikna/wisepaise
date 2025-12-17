@@ -9,8 +9,7 @@ import com.appswella.wisepaise.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -29,6 +28,9 @@ public class UserService {
     public User createUser(User user) {
         if (userRepo.existsByUserEmail(user.getUserEmail())) {
             User thisUser = userRepo.findByUserEmail(user.getUserEmail()).orElseThrow(() -> new ResourceNotFoundException("User", "email", user.getUserEmail()));
+            if (user.getUserContacts().isEmpty()) {
+                user.setUserContacts(thisUser.getUserContacts());
+            }
             if (!thisUser.isRegistered()) {
                 user.setUserId(thisUser.getUserId());
                 return updateUser(user);
@@ -49,7 +51,24 @@ public class UserService {
     }
 
     public User updateUser(User user) {
-        if (!userRepo.existsById(user.getUserId())) throw new ResourceNotFoundException("User", "id", user.getUserId());
+        if (!userRepo.existsByUserEmail(user.getUserEmail()))
+            throw new ResourceNotFoundException("User", "email", user.getUserEmail());
+
+        User thisUser = userRepo.findByUserEmail(user.getUserEmail()).orElseThrow(() -> new ResourceNotFoundException("User", "email", user.getUserEmail()));
+
+        if (!thisUser.getUserContacts().isEmpty()) {
+            List<String> thisUserContact = thisUser.getUserContacts();
+            List<String> userContact = user.getUserContacts();
+
+            Set<String> merged = new LinkedHashSet<>();
+            merged.addAll(thisUserContact);
+            merged.addAll(userContact);
+
+            List<String> mergedList = new ArrayList<>(merged);
+
+            user.setUserContacts(mergedList);
+        }
+
         return userRepo.save(user);
     }
 
