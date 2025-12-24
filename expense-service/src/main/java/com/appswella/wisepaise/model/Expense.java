@@ -1,5 +1,6 @@
 package com.appswella.wisepaise.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,5 +30,7 @@ public class Expense {
     private List<String> expensePaidTo;
     private String expenseReceiptURL;
     private String expenseUserId;
+
+    @JsonProperty("isSettlement")
     private boolean isSettlement;
 }
