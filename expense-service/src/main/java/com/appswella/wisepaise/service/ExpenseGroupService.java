@@ -36,11 +36,15 @@ public class ExpenseGroupService {
         Double totalExpenses = 0.0, totalIncome = 0.0;
         Map<String, BigDecimal> balances = new HashMap<>();
 
+
         for (Expense expense : expenses) {
+            boolean isSettlement = expense.isSettlement();
             if ("income".equalsIgnoreCase(expense.getExpenseSpendType())) {
                 totalIncome += expense.getExpenseAmount();
             } else {
-                totalExpenses += expense.getExpenseAmount();
+                if (!isSettlement) {
+                    totalExpenses += expense.getExpenseAmount();
+                }
             }
 
             if (expenseGroup.isExGroupShared()) {
