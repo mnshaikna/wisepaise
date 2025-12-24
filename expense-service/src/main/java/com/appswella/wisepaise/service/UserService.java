@@ -56,7 +56,7 @@ public class UserService {
 
         User thisUser = userRepo.findByUserEmail(user.getUserEmail()).orElseThrow(() -> new ResourceNotFoundException("User", "email", user.getUserEmail()));
 
-        if (!thisUser.getUserContacts().isEmpty()) {
+        if (thisUser.getUserContacts() != null && !thisUser.getUserContacts().isEmpty()) {
             List<String> thisUserContact = thisUser.getUserContacts();
             List<String> userContact = user.getUserContacts();
 
