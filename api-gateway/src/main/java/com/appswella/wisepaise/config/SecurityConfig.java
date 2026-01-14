@@ -1,27 +1,32 @@
 package com.appswella.wisepaise.config;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import com.appswella.wisepaise.utils.JwtUtil;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
+import reactor.core.publisher.Mono;
 
-@Configuration
-@EnableWebFluxSecurity
+import com.appswella.wisepaise.util.JwtUtil;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 public class SecurityConfig {
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(ex -> ex
-                        .pathMatchers("/expense/auth/**").permitAll()
-                        .anyExchange().permitAll()
+                        .pathMatchers("/expense/auth/**").permitAll() // Allow login
+                        .anyExchange().authenticated() // JWT required for all other endpoints
                 )
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
@@ -29,16 +34,35 @@ public class SecurityConfig {
     }
 
     @Bean
-    public MapReactiveUserDetailsService userDetailsService() {
-        UserDetails user = User.builder().username("user").password(passwordEncoder().encode("password")).roles("USER").build();
+    public WebFilter jwtWebFilter() {
+        return new WebFilter() {
+            @Override
+            public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
 
-        UserDetails admin = User.builder().username("admin").password(passwordEncoder().encode("password")).roles("ADMIN").build();
+                String path = exchange.getRequest().getPath().value();
+                System.out.println("Path:::" + path);
 
-        return new MapReactiveUserDetailsService(user, admin);
-    }
+                // Skip auth endpoints
+                if (path.startsWith("/auth/") || path.contains("auth")) {
+                    return chain.filter(exchange);
+                }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+                String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+
+                if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                    exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                    return exchange.getResponse().setComplete();
+                }
+
+                String token = authHeader.substring(7);
+
+                if (!jwtUtil.validateToken(token)) {
+                    exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                    return exchange.getResponse().setComplete();
+                }
+
+                return chain.filter(exchange);
+            }
+        };
     }
 }
