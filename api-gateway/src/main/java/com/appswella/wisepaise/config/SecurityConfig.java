@@ -12,21 +12,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
 
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
     @Bean
-    public SecurityWebFilterChain publicSecurity(ServerHttpSecurity http) {
-        return http.securityMatcher(ServerWebExchangeMatchers.pathMatchers("/auth/**", "/expense/auth/**", "/actuator/**")).csrf(ServerHttpSecurity.CsrfSpec::disable).authorizeExchange(ex -> ex.anyExchange().permitAll()).build();
-    }
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http, JwtWebFilter jwtWebFilter) {
+        return http.csrf(ServerHttpSecurity.CsrfSpec::disable).authorizeExchange(exchanges -> exchanges
+                // 🔓 AUTH endpoints (NO JWT)
+                .pathMatchers("/expense/auth/**", "/actuator/**").permitAll()
 
-    // 2️⃣ Protected endpoints (JWT required)
-    @Bean
-    public SecurityWebFilterChain securedSecurity(ServerHttpSecurity http, JwtWebFilter jwtWebFilter) {
-        return http.securityMatcher(ServerWebExchangeMatchers.anyExchange()).csrf(ServerHttpSecurity.CsrfSpec::disable).authorizeExchange(ex -> ex.anyExchange().authenticated()).addFilterAt(jwtWebFilter, SecurityWebFiltersOrder.AUTHORIZATION).httpBasic(ServerHttpSecurity.HttpBasicSpec::disable).formLogin(ServerHttpSecurity.FormLoginSpec::disable).build();
+                // 🔒 Everything else needs JWT
+                .anyExchange().authenticated()).addFilterAt(jwtWebFilter, SecurityWebFiltersOrder.AUTHORIZATION).httpBasic(ServerHttpSecurity.HttpBasicSpec::disable).formLogin(ServerHttpSecurity.FormLoginSpec::disable).build();
     }
 
     @Bean

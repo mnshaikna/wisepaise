@@ -18,6 +18,7 @@ public class JwtWebFilter implements WebFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+
         String authHeader = exchange.getRequest()
                 .getHeaders()
                 .getFirst(HttpHeaders.AUTHORIZATION);
@@ -31,9 +32,9 @@ public class JwtWebFilter implements WebFilter {
         if (!jwtUtil.validateToken(token)) {
             return unauthorized(exchange);
         }
+
         return chain.filter(exchange);
     }
-
 
     private Mono<Void> unauthorized(ServerWebExchange exchange) {
         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
