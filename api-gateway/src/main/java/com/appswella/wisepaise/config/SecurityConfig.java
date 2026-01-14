@@ -18,13 +18,16 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http, JwtWebFilter jwtWebFilter) {
-        return http.csrf(ServerHttpSecurity.CsrfSpec::disable).authorizeExchange(exchanges -> exchanges
-                // 🔓 AUTH endpoints (NO JWT)
-                .pathMatchers("/expense/auth/**", "/actuator/**").permitAll()
-
-                // 🔒 Everything else needs JWT
-                .anyExchange().authenticated()).addFilterAt(jwtWebFilter, SecurityWebFiltersOrder.AUTHORIZATION).httpBasic(ServerHttpSecurity.HttpBasicSpec::disable).formLogin(ServerHttpSecurity.FormLoginSpec::disable).build();
+    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+        return http
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .authorizeExchange(ex -> ex
+                        .pathMatchers("/expense/auth/**").permitAll()
+                        .anyExchange().permitAll()
+                )
+                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
+                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+                .build();
     }
 
     @Bean

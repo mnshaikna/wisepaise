@@ -19,6 +19,13 @@ public class JwtWebFilter implements WebFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
 
+        String path = exchange.getRequest().getPath().value();
+
+        // ✅ Skip auth endpoints at GATEWAY level
+        if (path.startsWith("/expense/auth/") || path.startsWith("/auth/")) {
+            return chain.filter(exchange);
+        }
+
         String authHeader = exchange.getRequest()
                 .getHeaders()
                 .getFirst(HttpHeaders.AUTHORIZATION);
@@ -35,6 +42,7 @@ public class JwtWebFilter implements WebFilter {
 
         return chain.filter(exchange);
     }
+
 
     private Mono<Void> unauthorized(ServerWebExchange exchange) {
         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
