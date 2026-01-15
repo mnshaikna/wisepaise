@@ -36,6 +36,14 @@ public class SecurityConfig {
     @Bean
     public WebFilter jwtWebFilter() {
         return (exchange, chain) -> {
+            String path = exchange.getRequest().getURI().getPath();
+
+            // ✅ Skip auth for public endpoints
+            if (path.contains("/expense/auth")
+                    || path.contains("/auth")) {
+                System.out.println("***Skipping auth for path: " + path + "***");
+                return chain.filter(exchange);
+            }
 
             String authHeader =
                     exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
@@ -47,7 +55,9 @@ public class SecurityConfig {
 
             String token = authHeader.substring(7);
 
+            System.out.println("***Token: " + token + "***");
             if (!jwtUtil.validateToken(token)) {
+                System.out.println("***I Reached this point and 401 is thrown***");
                 exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                 return exchange.getResponse().setComplete();
             }
