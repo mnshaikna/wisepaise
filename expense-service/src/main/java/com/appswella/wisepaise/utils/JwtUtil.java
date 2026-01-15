@@ -17,7 +17,9 @@ public class JwtUtil {
     private long expiry;
 
     public String generateToken(String userId, String email) {
-        return Jwts.builder().setSubject(userId).claim("email", email).setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + expiry)).signWith(Keys.hmacShaKeyFor(secret.getBytes()), SignatureAlgorithm.HS256).compact();
+        return Jwts.builder().setSubject(userId).claim("email", email).setIssuedAt(new Date()).
+                setExpiration(new Date(System.currentTimeMillis() + expiry)).
+                signWith(Keys.hmacShaKeyFor(secret.getBytes()), SignatureAlgorithm.HS256).compact();
     }
 
     public boolean validateToken(String token) {
