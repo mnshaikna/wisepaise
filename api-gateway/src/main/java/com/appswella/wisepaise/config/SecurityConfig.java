@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import com.appswella.wisepaise.utils.JwtUtil;
+import com.appswella.wisepaise.util.JwtUtil;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.server.WebFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +36,6 @@ public class SecurityConfig {
     @Bean
     public WebFilter jwtWebFilter() {
         return (exchange, chain) -> {
-
-            String path = exchange.getRequest().getPath().value();
-
-            /*Allow auth endpoints
-            if (path.startsWith("/expense/auth") || path.startsWith("/auth")) {
-                return chain.filter(exchange);
-            }*/
 
             String authHeader =
                     exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
