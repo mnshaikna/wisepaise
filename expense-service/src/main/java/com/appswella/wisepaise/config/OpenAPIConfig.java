@@ -18,7 +18,7 @@ public class OpenAPIConfig {
                         .version("v1.0.0")
                         .contact(new Contact()
                                 .name("WisePaisa Team")
-                                .email("contact@wisepaisa.com"))
+                                .email("appswella@gmail.com"))
                         .license(new License()
                                 .name("Apache 2.0")
                                 .url("https://www.apache.org/licenses/LICENSE-2.0.html")));
