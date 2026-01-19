@@ -7,15 +7,20 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.PathContainer;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import com.appswella.wisepaise.util.JwtUtil;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.server.WebFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.util.pattern.PathPatternParser;
+import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 @Configuration
@@ -35,7 +40,8 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html",
-            "/webjars/**"
+            "/webjars/**",
+            "/expense/api/health"
     };
 
     @Bean
@@ -60,7 +66,9 @@ public class SecurityConfig {
 
             // Skip JWT validation for whitelisted paths
             for (String pattern : AUTH_WHITELIST) {
+                log.info("Checking path: " + pattern);
                 if (pathMatcher(pattern, path)) {
+                    log.info("Skipping JWT validation for whitelisted path: " + path);
                     return chain.filter(exchange);
                 }
             }
@@ -81,8 +89,29 @@ public class SecurityConfig {
                 exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                 return exchange.getResponse().setComplete();
             }
+            log.info("all good till now");
 
-            return chain.filter(exchange);
+
+            String userId = jwtUtil.getSubject(token); // or email, or username
+
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(
+                            userId,
+                            null,
+                            List.of() // add roles if you have them
+                    );
+
+            SecurityContextImpl securityContext = new SecurityContextImpl(authentication);
+
+            log.info("JWT valid, SecurityContext populated");
+
+            return chain.filter(exchange)
+                    .contextWrite(ReactiveSecurityContextHolder.withSecurityContext(
+                            Mono.just(securityContext)
+                    ));
+
+
+            //return chain.filter(exchange);
         };
     }
 
