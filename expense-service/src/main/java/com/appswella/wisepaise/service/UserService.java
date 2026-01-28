@@ -90,4 +90,8 @@ public class UserService {
     public User getUserByUserId(String userId) {
         return userRepo.findByUserId(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
     }
+
+    public List<User> getFriends(List<String> userIdList) {
+        return userRepo.findByUserIdIn(userIdList);
+    }
 }

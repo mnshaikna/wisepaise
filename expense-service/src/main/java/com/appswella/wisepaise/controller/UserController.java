@@ -51,4 +51,9 @@ public class UserController {
     public void deleteUser(@PathVariable String id) {
         userService.deleteUser(id);
     }
+
+    @PostMapping("/friends")
+    public List<User> getFriends(@RequestBody List<String> userIdList) {
+        return userService.getFriends(userIdList);
+    }
 }
