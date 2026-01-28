@@ -7,6 +7,7 @@ import com.appswella.wisepaise.repository.ExpenseReminderRepository;
 import com.appswella.wisepaise.repository.ExpenseRepository;
 import com.appswella.wisepaise.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -92,6 +93,9 @@ public class UserService {
     }
 
     public List<User> getFriends(List<String> userIdList) {
+        if (userIdList == null || userIdList.isEmpty()) {
+            return Collections.emptyList();
+        }
         return userRepo.findByUserIdIn(userIdList);
     }
 }
