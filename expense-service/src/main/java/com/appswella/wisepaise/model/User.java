@@ -25,5 +25,6 @@ public class User {
     @JsonProperty("isRegistered")
     private boolean isRegistered;
 
+    private String userPin;
     private List<String> userContacts;
 }

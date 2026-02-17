@@ -10,6 +10,6 @@ public class HealthCheckController {
 
     @GetMapping("/health")
     public String healthCheck() {
-        return "Expense Service is up and running!";
+        return "WisePaisa - Expense Service is up and running!";
     }
 }

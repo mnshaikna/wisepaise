@@ -30,10 +30,9 @@ public class ExpenseGroup {
     private List<Expense> expenses;
     private String exGroupOwnerId;
     private String exGroupStatus;
-
+    private boolean isLocked;
     private double exGroupIncome;
     private double exGroupExpenses;
-
     private Map<String, BigDecimal> exGroupMembersBalance;
     private List<Map<String, Object>> exGroupMembersSettlements;
 }
