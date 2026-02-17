@@ -1,5 +1,6 @@
 package com.appswella.wisepaise.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Generated;
@@ -30,7 +31,10 @@ public class ExpenseGroup {
     private List<Expense> expenses;
     private String exGroupOwnerId;
     private String exGroupStatus;
+
+    @JsonProperty("isLocked")
     private boolean isLocked;
+
     private double exGroupIncome;
     private double exGroupExpenses;
     private Map<String, BigDecimal> exGroupMembersBalance;
