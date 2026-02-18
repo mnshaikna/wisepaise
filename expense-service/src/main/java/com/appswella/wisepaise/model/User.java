@@ -26,5 +26,6 @@ public class User {
     private boolean isRegistered;
 
     private String userPin;
+    private String userPinSalt;
     private List<String> userContacts;
 }
