@@ -26,6 +26,9 @@ public class UserService {
     @Autowired
     private ExpenseReminderRepository expenseReminderRepo;
 
+    @Autowired
+    private EmailService emailService;
+
     public User createUser(User user) {
         if (userRepo.existsByUserEmail(user.getUserEmail())) {
             User thisUser = userRepo.findByUserEmail(user.getUserEmail()).orElseThrow(() -> new ResourceNotFoundException("User", "email", user.getUserEmail()));
@@ -97,5 +100,12 @@ public class UserService {
             return Collections.emptyList();
         }
         return userRepo.findByUserIdIn(userIdList);
+    }
+
+    public User resetPin(String userId) {
+        User user = userRepo.findByUserId(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
+        emailService.sendPinResetEmail(user.getUserEmail(), "http://localhost:8082/reset-pin?userId=" + userId);
+        return userRepo.save(user);
     }
 }

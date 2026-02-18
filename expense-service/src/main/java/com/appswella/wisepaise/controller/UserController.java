@@ -28,6 +28,13 @@ public class UserController {
         return userService.getUserByEmailId(emailId);
     }
 
+    @GetMapping("/resetPin/{userId}")
+    @Operation(summary = "Reset User PIN")
+    public User resetPin(@PathVariable String userId) {
+        return userService.resetPin(userId);
+    }
+
+
     @GetMapping("/get/userId/{userId}")
     @Operation(summary = "Get a User by userId")
     public User getUserByUserId(@PathVariable String userId) {
