@@ -5,6 +5,7 @@ import com.appswella.wisepaise.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,8 +37,18 @@ public class UserController {
 
     @GetMapping("/reset-pin")
     @Operation(summary = "Reset User PIN to Default")
-    public User resetDefaultPin(@RequestParam("token") String token) {
-        return userService.resetDefaultPin(token);
+    public ResponseEntity<String> resetDefaultPin(@RequestParam("token") String token) {
+        User user = userService.resetDefaultPin(token);
+        String htmlText = """
+                <html>
+                <body style="font-family: Arial; text-align:center; margin-top:50px;">
+                    <h2>✅ PIN Reset Successful</h2>
+                    <p>User: %s</p>
+                    <p>Your PIN has been reset to <b>0000</b>.</p>
+                </body>
+                </html>
+                """.formatted(user.getUserEmail());
+        return ResponseEntity.ok(htmlText);
     }
 
     @GetMapping("/get/userId/{userId}")

@@ -123,7 +123,7 @@ public class UserService {
 
         ResetToken resetTokenResp = resetTokenService.createResetToken(resetToken);
 
-        emailService.sendPinResetEmail(user.getUserEmail(), resetTokenResp.getToken());
+        emailService.sendPinResetEmail(user, resetTokenResp.getToken());
         return userRepo.save(user);
     }
 
