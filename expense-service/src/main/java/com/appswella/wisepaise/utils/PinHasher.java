@@ -10,22 +10,20 @@ import java.util.Base64;
 @Component
 public class PinHasher {
 
-    public String generateSalt() {
-        byte[] salt = new byte[16];
-        new SecureRandom().nextBytes(salt);
-        return Base64.getEncoder().encodeToString(salt);
+    public static String generateSalt(int length) {
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[length];
+        random.nextBytes(salt);
+
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(salt);
     }
 
-    public String hashPin(String pin, String salt) throws Exception {
-
-        int iterations = 100000;
-        int keyLength = 256;
-
-        PBEKeySpec spec = new PBEKeySpec(pin.toCharArray(), Base64.getDecoder().decode(salt), iterations, keyLength);
-
-        SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-
-        byte[] hash = skf.generateSecret(spec).getEncoded();
+    public static String hashPin(String pin, String salt, int iterations) throws Exception {
+        byte[] saltBytes = salt.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        PBEKeySpec spec = new PBEKeySpec(pin.toCharArray(), saltBytes, iterations, 256   // 32 bytes = 256 bits
+        );
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        byte[] hash = factory.generateSecret(spec).getEncoded();
 
         return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
     }

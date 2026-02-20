@@ -34,9 +34,6 @@ public class UserService {
     @Autowired
     private ResetTokenService resetTokenService;
 
-    @Autowired
-    private PinHasher pinHasher;
-
     public User createUser(User user) {
         if (userRepo.existsByUserEmail(user.getUserEmail())) {
             User thisUser = userRepo.findByUserEmail(user.getUserEmail()).orElseThrow(() -> new ResourceNotFoundException("User", "email", user.getUserEmail()));
@@ -135,10 +132,10 @@ public class UserService {
 
         User user = userRepo.findByUserId(resetToken.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User", "id", resetToken.getUserId()));
 
-        String newSalt = pinHasher.generateSalt();
+        String newSalt = PinHasher.generateSalt(16);
         String newHash = null;
         try {
-            newHash = pinHasher.hashPin("0000", newSalt);
+            newHash = PinHasher.hashPin("0000", newSalt, 100000);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
