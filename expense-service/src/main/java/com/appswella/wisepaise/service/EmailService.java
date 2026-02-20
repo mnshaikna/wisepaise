@@ -10,7 +10,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 @Service
 public class EmailService {
 
-
     @Autowired
     private JavaMailSender mailSender;
 

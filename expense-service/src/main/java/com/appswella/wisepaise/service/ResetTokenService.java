@@ -2,8 +2,11 @@ package com.appswella.wisepaise.service;
 
 import com.appswella.wisepaise.model.ResetToken;
 import com.appswella.wisepaise.repository.ResetTokenRepository;
+import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ResetTokenService {
 
     @Autowired
