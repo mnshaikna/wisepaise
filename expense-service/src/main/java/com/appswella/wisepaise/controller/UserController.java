@@ -34,12 +34,11 @@ public class UserController {
         return userService.sendResetPinEmail(userId);
     }
 
-    @GetMapping("/reset-pin/{token}")
+    @GetMapping("/reset-pin")
     @Operation(summary = "Reset User PIN to Default")
-    public User resetDefaultPin(@PathVariable String token) {
+    public User resetDefaultPin(@RequestParam("token") String token) {
         return userService.resetDefaultPin(token);
     }
-
 
     @GetMapping("/get/userId/{userId}")
     @Operation(summary = "Get a User by userId")

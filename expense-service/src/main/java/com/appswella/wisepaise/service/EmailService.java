@@ -34,7 +34,7 @@ public class EmailService {
     }
 
     private static String getString(String token) {
-        String resetLink = "https://wisepaisa.cloud:8083/users/reset-pin?token=" + token;
+        String resetLink = "http://wisepaisa.cloud:8083/users/reset-pin/" + token;
 
         return "<p>Click the button below to reset your Group PIN." + "<br/><br/>" + "After reset, The default PIN is 0000</p>" + "<br/>" + "<a href=\"" + resetLink + "\" " + "style=\"display:inline-block;" + "padding:10px 20px;" + "background:#4CAF50;" + "color:white;" + "text-decoration:none;" + "border-radius:6px;" + "font-weight:bold;\">" + "Reset PIN</a>";
     }
