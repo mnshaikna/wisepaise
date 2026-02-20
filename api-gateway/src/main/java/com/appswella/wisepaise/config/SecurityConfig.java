@@ -41,7 +41,8 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/swagger-ui.html",
             "/webjars/**",
-            "/expense/api/health"
+            "/expense/api/health",
+            "/expense/users/reset-pin"
     };
 
     @Bean

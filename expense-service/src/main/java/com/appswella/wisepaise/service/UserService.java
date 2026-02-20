@@ -1,15 +1,19 @@
 package com.appswella.wisepaise.service;
 
 import com.appswella.wisepaise.exception.ResourceNotFoundException;
+import com.appswella.wisepaise.model.ResetToken;
 import com.appswella.wisepaise.model.User;
 import com.appswella.wisepaise.repository.ExpenseGroupRepository;
 import com.appswella.wisepaise.repository.ExpenseReminderRepository;
 import com.appswella.wisepaise.repository.ExpenseRepository;
 import com.appswella.wisepaise.repository.UserRepository;
+import com.appswella.wisepaise.utils.PinHasher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.util.*;
 
 @Service
@@ -28,6 +32,15 @@ public class UserService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private ResetTokenService resetTokenService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private PinHasher pinHasher;
 
     public User createUser(User user) {
         if (userRepo.existsByUserEmail(user.getUserEmail())) {
@@ -102,10 +115,41 @@ public class UserService {
         return userRepo.findByUserIdIn(userIdList);
     }
 
-    public User resetPin(String userId) {
+    public User sendResetPinEmail(String userId) {
         User user = userRepo.findByUserId(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
-        emailService.sendPinResetEmail(user.getUserEmail(), "http://localhost:8082/reset-pin?userId=" + userId);
+        SecureRandom random = new SecureRandom();
+        int token = random.nextInt(900000) + 100000;
+
+        ResetToken resetToken = new ResetToken();
+        resetToken.setToken(String.valueOf(token));
+        resetToken.setUserId(userId);
+        resetToken.setExpiresAt(new Date(System.currentTimeMillis() + 15 * 60 * 1000));
+
+        ResetToken resetTokenResp = resetTokenService.createResetToken(resetToken);
+
+        emailService.sendPinResetEmail(user.getUserEmail(), resetTokenResp.getToken());
+        return userRepo.save(user);
+    }
+
+    public User resetDefaultPin(String token) {
+        ResetToken resetToken = resetTokenService.getResetToken(token);
+        if (resetToken == null) {
+            throw new ResourceNotFoundException("ResetToken", "token", token);
+        }
+
+        User user = userRepo.findByUserId(resetToken.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User", "id", resetToken.getUserId()));
+
+        String newSalt = pinHasher.generateSalt();
+        String newHash = null;
+        try {
+            newHash = pinHasher.hashPin("0000", newSalt);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        user.setUserPin(newHash);
+        user.setUserPinSalt(newSalt);
+        resetTokenService.deleteResetToken(token);
         return userRepo.save(user);
     }
 }
