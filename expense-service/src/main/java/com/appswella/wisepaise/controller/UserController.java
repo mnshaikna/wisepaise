@@ -41,10 +41,10 @@ public class UserController {
         User user = userService.resetDefaultPin(token);
         String htmlText = """
                 <html>
-                <body style="font-family: Arial; text-align:center; margin-top:50px;">
+                <body style="font-family: Arial; text-align:center; margin-top:50px; background-color: #000000; color: #FFFFFF;">
                     <h2>✅ PIN Reset Successful</h2>
                     <p>User: %s</p>
-                    <p>Your PIN has been reset to <b>0000</b>.</p>
+                    <p>Your PIN has been reset to <b style="color:#FFD700;">0000</b></p>
                 </body>
                 </html>
                 """.formatted(user.getUserEmail());
